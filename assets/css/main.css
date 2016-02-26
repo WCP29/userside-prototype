@@ -13,14 +13,14 @@
 section {
 	height: 100%;
 }
-#section-menu, #where-am-i, #find-a-room, #navigation {
+#section-menu, #where-am-i, #find-a-room, #navigation, #campus-map {
 	padding-top: 20%;
 	text-align: center;
 }
 #begin-menu-content {
 	height: 100%;
 }
-#smenuc-where, #smenuc-navig, #smenuc-find {
+#smenuc-where, #smenuc-navig, #smenuc-find, #smenu-campmap {
 	padding: 20px;
 	font-size: 30px;
 	cursor: pointer;
@@ -38,7 +38,7 @@ section {
 #find-bathroom, #find-stair, #find-aed {
 	font-size: 20px;
 }
-//////////////
+
 
 
 /* Reset */
