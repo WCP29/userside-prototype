@@ -11,6 +11,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
 		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="stylesheet" href="assets/css/bootstrap-modal-bs3patch.css" />
 		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
 		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
 	</head>
@@ -119,8 +120,53 @@
 				
 			<!-- Campus Map -->
 			<section id="campus-map">
-				<span class="image fit main"><img src="./images/mockfloorplan.png" alt="" / id="map-image"></span>
-
+				
+				<ul class='custom-menu'>
+				  <li data-action="first">First thing</li>
+				  <li data-action="second">Second thing</li>
+				  <li data-action="third">Third thing</li>
+				</ul>
+				
+				<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" id="svg-map">
+					 <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+					 <g>
+						  <title>Layer 1</title>
+						  <rect transform="rotate(121.16, 105.5, 88.5)" id="svg_1" height="67.000002" width="93" y="54.999997" x="59" stroke-width="5" stroke="#000000" fill="#000000"/>
+						  <rect id="svg_2" height="2" width="2" y="806" x="1103" stroke-linecap="null" stroke-linejoin="null" stroke-width="5" stroke="#000000" fill="#000000"/>
+						  <rect id="svg_3" height="128" width="123" y="678" x="956" stroke-linecap="null" stroke-linejoin="null" stroke-width="5" stroke="#000000" fill="#000000"/>
+						  <rect id="svg_4" height="139" width="141" y="325" x="150" stroke-linecap="null" stroke-linejoin="null" stroke-width="5" stroke="#000000" fill="#000000"/>
+						  <rect id="svg_5" transform="rotate(73.5001, 462, 146.5)" height="109.060501" width="120.926947" y="91.969722" x="401.536476" stroke-width="5" stroke="#000000" fill="#000000"/>
+					 </g>
+				</svg>
+			<!--	<span class="image fit main" id="span-image-holder"> -->
+				<!--	<img src="./images/mockfloorplan.png" alt="" usemap="#CampusMap" class="image fit main" />
+						<map name="CampusMap" id="campus-coordinates">
+						    <area alt="" title="top-left" href="#static" shape="poly" coords="6,92,326,107,325,265,10,261,6,259" />
+						    <area alt="" title="top-right" href="#static" shape="poly" coords="578,78,572,265,909,264,905,88" />
+						    <area alt="" title="middle-circle" href="#static" shape="poly" coords="469,352,506,379,514,416,491,465,458,481,407,468,386,438,383,400,403,366,430,350" />
+						    <area alt="" title="top-circle" href="#static" shape="poly" coords="380,106,456,69,520,106,534,162,498,227,416,232,368,201,360,127,405,80,444,68,445,73" />
+						</map> -->
+			<!--	</span> -->
+			
+			<div id="modal">
+				<p>Upper-Left Patio</p>
+					<ul class="actions">
+							<li id="floors"><a href="">Floors</a></li>
+							<li id="Description"><a href="">Description</a></li>
+						</ul>
+					</div>
+				
+			</div>
+			
+			<!-- <div id="static" class="modal hide fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
+			  <div class="modal-body">
+			    <p>Would you like to continue with some arbitrary task?</p>
+			  </div>
+			  <div class="modal-footer">
+			    <button type="button" data-dismiss="modal" class="btn">Cancel</button>
+			    <button type="button" data-dismiss="modal" class="btn btn-primary">Continue Task</button>
+			  </div>
+			</div> -->
 				</section>
 			
 			
@@ -218,6 +264,8 @@
 			<script src="assets/js/main.js"></script>
 			<!-- Custom Code -->
 			<script src="assets/js/app.js"></script>
-
+			<script src="assets/js/imageMapResizer.min.js"></script>
+			<script src="assets/js/bootstrap-modal.js"></script>
+			<script src="assets/js/bootstrap-modalmanager.js"></script>
 	</body>
 </html>
