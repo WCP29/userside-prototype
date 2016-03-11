@@ -1,3 +1,8 @@
+var selectedBuilding = '';
+var inst = '';
+var floorModal = '';
+var blueprint = '';
+
 $(document).ready(function() {
 	console.log('jQuery running properly');
 
@@ -14,6 +19,9 @@ $(document).ready(function() {
 	//campusMapCoordinates();
 	interactArea();
 	customRightClickMenu();
+	clickMap();
+	clickRoomsModal();
+	whatFloorClick();
 
 
 });
@@ -115,7 +123,7 @@ function customRightClickMenu() {
 	});
 
 
-	// If the document is clicked somewhere
+	// If the svg-map is clicked somewhere
 	$("#svg-map").bind("mousedown", function (e) {
 	    
 	    // If the clicked element is not the menu
@@ -134,12 +142,156 @@ function customRightClickMenu() {
 	    switch($(this).attr("data-action")) {
 	        
 	        // A case for each action. Your actions here
-	        case "first": alert("first"); break;
-	        case "second": alert("second"); break;
-	        case "third": alert("third"); break;
+	        case "first": alert("I am Here"); break;
+	        case "second": alert("Navigate Me"); break;
+	        case "third": alert("Here are the floors (proof of concept)"); break;
 	    }
 	  
 	    // Hide it AFTER the action was triggered
 	    $(".custom-menu").hide(100);
 	  });
+}
+function clickMap() {
+	$(".mapSVGClass").on('click', function() {
+		
+			inst = $('[data-remodal-id=buildingModal]').remodal();
+		
+		var svgID = $(this).attr('id');
+		switch(svgID) {
+	        
+	        // A case for each action. Your actions here
+	        case "UU": 
+	        	$("#UU").css({
+            		"fill": "red"
+        		});
+        		selectedBuilding = "University Union";
+        		$('#Modal-Head1, #modal-floorshead').empty().append(selectedBuilding);
+        		inst.open();
+	        	break;
+	        case "svg_2": 
+	        	$("#svg_2").css({
+            		"fill": "yellow"
+        		});
+	        	break;
+	        case "svg_3":
+	        	$("#svg_3").css({
+            		"fill": "orange"
+        		});
+	        	break;
+	        case "GBL":
+	        	$("#GBL").css({
+            		"fill": "pink"
+        		});
+        		selectedBuilding = "Glenn G. Bartle Library";
+        		$('#Modal-Head1, #modal-floorshead').empty().append(selectedBuilding);
+        		inst.open();
+	        	break;
+	        case "EB":
+	        	$("#EB").css({
+            		"fill": "red"
+        		});
+        		selectedBuilding = "Engineering Building";
+        		$('#Modal-Head1, #modal-floorshead').empty().append(selectedBuilding);
+        		inst.open();
+	        	break;
+	    }
+	})
+}
+function clickRoomsModal() {
+	$('#modalRoomLink').on('click', function(e) {
+		e.preventDefault();
+		inst.close();
+		floorModal = $('[data-remodal-id=floorsModal]').remodal();
+		floorModal.open();
+		
+	})
+}
+function whatFloorClick() {
+	$('#floor-1, #floor-2').on('click', function(e) {
+		var floorClicked = $(this).attr('id');
+		e.preventDefault();
+		
+			switch(floorClicked) {
+	        
+	        // A case for each action. Your actions here
+	        case "floor-1": 
+	        	floorClicked = "Floor 1";
+	        	$('#modal-blueprinthead').empty().append(selectedBuilding + ' - ' + floorClicked);
+	        	// Send call to server to grab information from SQL to draw out the SVG:
+	        	
+	        	$.ajax({    //create an ajax request to load_page.php
+		            type: "GET",
+		            url: "UIgrabMap.php",
+		            dataType: "json",
+		            data: { building_clicked : selectedBuilding, floor_clicked : floorClicked},
+		            success: function(response){  
+		            	
+		                for (var i = 0; i < response.length; i++) {
+		                /*	$('#displayBlues').empty().append('<rect id="rm' + response[i].svg_id + '" height="' + response[i].height + '" width="' +
+		                	response[i].width + '" y="' + response[i].yCord + '" x="' + response[i].xCord + '" stroke-width="1.5" stroke="#000000" fill="#ffffff" />');
+		               */
+		               
+		                var newRect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+					    newRect.setAttribute('id', response[i].svg_id);
+					    newRect.setAttribute('height',response[i].height);
+					    newRect.setAttribute('width',response[i].width );
+					    newRect.setAttribute('y',response[i].yCord );
+					    newRect.setAttribute('x',response[i].xCord);
+					    $("#displayBlues").empty().append(newRect);
+		                }
+		            },
+		            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+		                console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
+		            }  
+		        });
+	        	break;
+	        	
+	        case "floor-2":
+	        	floorClicked = "Floor 2";
+	        	$('#modal-blueprinthead').empty().append(selectedBuilding + ' - ' + floorClicked);
+	        	
+	        	$.ajax({    //create an ajax request to load_page.php
+		            type: "GET",
+		            url: "UIgrabMap.php", 
+		            dataType: "json",
+		            data: { building_clicked : selectedBuilding, floor_clicked : floorClicked},
+		            success: function(response){ 
+		            	
+		                 for (var i = 0; i < response.length; i++) {
+		                	 /*	$('#displayBlues').empty().append('<rect id="rm' + response[i].svg_id + '" height="' + response[i].height + '" width="' +
+		                	response[i].width + '" y="' + response[i].yCord + '" x="' + response[i].xCord + '" stroke-width="1.5" stroke="#000000" fill="#ffffff" />');
+		               */
+		               
+		                var newRect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+					    newRect.setAttribute('id', response[i].svg_id);
+					    newRect.setAttribute('height',response[i].height);
+					    newRect.setAttribute('width',response[i].width );
+					    newRect.setAttribute('y',response[i].yCord );
+					    newRect.setAttribute('x',response[i].xCord);
+					    $("#displayBlues").empty().append(newRect);
+		                 	
+		                 	
+		                 	
+		                 }
+		                
+		            },
+		            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+		                console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
+		            }  
+		        });
+		        
+	        default:
+	        		break;
+	    }
+		
+		floorModal.close();
+		blueprint = $('[data-remodal-id=blueprintModal]').remodal();
+		blueprint.open();
+		console.log('worked.');
+	})
+}
+function whatRoomClicked() {
+	$('#').on('click', function() {
+		
+	})
 }

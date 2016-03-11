@@ -12,6 +12,9 @@
 		<!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<link rel="stylesheet" href="assets/css/bootstrap-modal-bs3patch.css" />
+		<link rel="stylesheet" href="assets/css/remodal-default-theme.css" />
+		<link rel="stylesheet" href="assets/css/remodal.css" />
+		
 		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
 		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
 	</head>
@@ -45,7 +48,7 @@
 							<h2>Lost?</h2>
 							<p>We can help you get there.</p>
 						</header>
-						<span class="image"><img src="images/pic01.jpg" alt="" /></span>
+						<span class="image"><img src="" alt="" /></span>
 
 						<div class="4u$ 12u$(xsmall)" id="begin-container"><a href="#begin-menu"><input type="button" value="Start" class="fit special" id="begin-button"/></a>
 						</div>
@@ -119,123 +122,76 @@
 				</section>
 				
 			<!-- Campus Map -->
-			<section id="campus-map">
-				
-				<ul class='custom-menu'>
-				  <li data-action="first">First thing</li>
-				  <li data-action="second">Second thing</li>
-				  <li data-action="third">Third thing</li>
-				</ul>
-				
-				<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" id="svg-map">
-					 <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
-					 <g>
-						  <title>Layer 1</title>
-						  <rect transform="rotate(121.16, 105.5, 88.5)" id="svg_1" height="67.000002" width="93" y="54.999997" x="59" stroke-width="5" stroke="#000000" fill="#000000"/>
-						  <rect id="svg_2" height="2" width="2" y="806" x="1103" stroke-linecap="null" stroke-linejoin="null" stroke-width="5" stroke="#000000" fill="#000000"/>
-						  <rect id="svg_3" height="128" width="123" y="678" x="956" stroke-linecap="null" stroke-linejoin="null" stroke-width="5" stroke="#000000" fill="#000000"/>
-						  <rect id="svg_4" height="139" width="141" y="325" x="150" stroke-linecap="null" stroke-linejoin="null" stroke-width="5" stroke="#000000" fill="#000000"/>
-						  <rect id="svg_5" transform="rotate(73.5001, 462, 146.5)" height="109.060501" width="120.926947" y="91.969722" x="401.536476" stroke-width="5" stroke="#000000" fill="#000000"/>
-					 </g>
-				</svg>
-			<!--	<span class="image fit main" id="span-image-holder"> -->
-				<!--	<img src="./images/mockfloorplan.png" alt="" usemap="#CampusMap" class="image fit main" />
-						<map name="CampusMap" id="campus-coordinates">
-						    <area alt="" title="top-left" href="#static" shape="poly" coords="6,92,326,107,325,265,10,261,6,259" />
-						    <area alt="" title="top-right" href="#static" shape="poly" coords="578,78,572,265,909,264,905,88" />
-						    <area alt="" title="middle-circle" href="#static" shape="poly" coords="469,352,506,379,514,416,491,465,458,481,407,468,386,438,383,400,403,366,430,350" />
-						    <area alt="" title="top-circle" href="#static" shape="poly" coords="380,106,456,69,520,106,534,162,498,227,416,232,368,201,360,127,405,80,444,68,445,73" />
-						</map> -->
-			<!--	</span> -->
-			
-			<div id="modal">
-				<p>Upper-Left Patio</p>
-					<ul class="actions">
-							<li id="floors"><a href="">Floors</a></li>
-							<li id="Description"><a href="">Description</a></li>
-						</ul>
+			<div class="remodal-bg">
+				<section id="campus-map">
+					
+					<ul class='custom-menu'>
+					  <li data-action="first">I am Here</li>
+					  <li data-action="second">Directions</li>
+					  <li data-action="third">FloorPlans</li>
+					</ul>
+					<div class="svg-container">
+						<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" id="svg-map" preserveAspectRatio="xMinYMin meet" >
+							 <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+							 <g>
+								  <title>Layer 1</title>
+								  <rect transform="rotate(121.16, 105.5, 88.5)" id="UU" class="mapSVGClass" height="67.000002" width="93" y="54.999997" x="59" stroke-width="5" stroke="#000000" fill="#000000"/>
+								  <rect id="svg_2" class="mapSVGClass" height="2" width="2" y="806" x="1103" stroke-linecap="null" stroke-linejoin="null" stroke-width="5" stroke="#000000" fill="#000000"/>
+								  <rect id="svg_3" class="mapSVGClass" height="128" width="123" y="678" x="956" stroke-linecap="null" stroke-linejoin="null" stroke-width="5" stroke="#000000" fill="#000000"/>
+								  <rect id="GBL" class="mapSVGClass" height="139" width="141" y="325" x="150" stroke-linecap="null" stroke-linejoin="null" stroke-width="5" stroke="#000000" fill="#000000"/>
+								  <rect id="EB" class="mapSVGClass" transform="rotate(73.5001, 462, 146.5)" height="109.060501" width="120.926947" y="91.969722" x="401.536476" stroke-width="5" stroke="#000000" fill="#000000"/>
+							 </g>
+						</svg>
 					</div>
-				
+				<!--	<span class="image fit main" id="span-image-holder"> -->
+					<!--	<img src="./images/mockfloorplan.png" alt="" usemap="#CampusMap" class="image fit main" />
+							<map name="CampusMap" id="campus-coordinates">
+							    <area alt="" title="top-left" href="#static" shape="poly" coords="6,92,326,107,325,265,10,261,6,259" />
+							    <area alt="" title="top-right" href="#static" shape="poly" coords="578,78,572,265,909,264,905,88" />
+							    <area alt="" title="middle-circle" href="#static" shape="poly" coords="469,352,506,379,514,416,491,465,458,481,407,468,386,438,383,400,403,366,430,350" />
+							    <area alt="" title="top-circle" href="#static" shape="poly" coords="380,106,456,69,520,106,534,162,498,227,416,232,368,201,360,127,405,80,444,68,445,73" />
+							</map> -->
+				<!--	</span> -->
 			</div>
 			
-			<!-- <div id="static" class="modal hide fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
-			  <div class="modal-body">
-			    <p>Would you like to continue with some arbitrary task?</p>
-			  </div>
-			  <div class="modal-footer">
-			    <button type="button" data-dismiss="modal" class="btn">Cancel</button>
-			    <button type="button" data-dismiss="modal" class="btn btn-primary">Continue Task</button>
-			  </div>
-			</div> -->
-				</section>
+			<div data-remodal-id="buildingModal">
+			  <button data-remodal-action="close" class="remodal-close"></button>
+			  <h1 id="Modal-Head1">AYOYOOOOOOOOSOSOSSSO</h1>
+			 	<ul class="actions" id="building-menu">
+					<li id=""><a href="#" id="modalRoomLink" >Rooms</a></li>
+					<li id=""><a href="#" id="modalDirectionsLink" >Directions</a></li>
+				</ul>
+			</div>
 			
+				<div data-remodal-id="floorsModal">
+				  <button data-remodal-action="close" class="remodal-close"></button>
+				  <h1 id="modal-floorshead">AYOYOOOOOOOOSOSOSSSO</h1>
+				 	<ul class="actions" id="building-menu">
+						<li id=""><a href="#" id="floor-1" >Floor 1</a></li>
+						<li id=""><a href="#" id="floor-2" >Floor 2</a></li>
+					</ul>
+				</div>
+				
+				<div data-remodal-id="blueprintModal">
+				  <button data-remodal-action="close" class="remodal-close"></button>
+				  <h1 id="modal-blueprinthead">AYOYOOOOOOOOSOSOSSSO</h1>
+				  <div id="blueprintHolder">
+				  	<svg id="svgHolder" width="580" height="400" xmlns="http://www.w3.org/2000/svg"> 
+				  		<g id="displayBlues">
+				  			
+				  	<!--		
+				  		<rect id="rm101" height="53" width="49" y="96.45" x="62.5" stroke-width="1.5" stroke="#000000" fill="#ffffff"></rect><rect id="rm103" height="53" width="49" y="96.45" x="112.5" stroke-width="1.5" stroke="#000000" fill="#ffffff"></rect><rect id="rm118" height="53" width="49" y="96.45" x="162.5" stroke-width="1.5" stroke="#000000" fill="#ffffff"></rect><rect id="rm120" height="53" width="49" y="97.45" x="212.5" stroke-width="1.5" stroke="#000000" fill="#ffffff"></rect><rect id="rm117" height="53" width="49" y="96.45" x="262.5" stroke-width="1.5" stroke="#000000" fill="#ffffff"></rect><rect id="rm105" height="53" width="49" y="97.45" x="312.5" stroke-width="1.5" stroke="#000000" fill="#ffffff"></rect><rect id="rm106" height="53" width="49" y="98.45" x="362.5" stroke-width="1.5" stroke="#000000" fill="#ffffff"></rect><rect id="rm107" height="53" width="49" y="153.45" x="363.5" stroke-width="1.5" stroke="#000000" fill="#ffffff"></rect><rect id="rm108" height="53" width="49" y="208.45" x="364.5" stroke-width="1.5" stroke="#000000" fill="#ffffff"></rect><rect id="rm109" height="53" width="49" y="264.45" x="364.5" stroke-width="1.5" stroke="#000000" fill="#ffffff"></rect><rect id="rm116" height="57" width="53" y="263.45" x="310.5" stroke-width="1.5" stroke="#000000" fill="#ffffff"></rect><rect id="rm110" height="53" width="49" y="266.45" x="260.5" stroke-width="1.5" stroke="#000000" fill="#ffffff"></rect><rect id="rm111" height="53" width="49" y="211.45" x="260.5" stroke-width="1.5" stroke="#000000" fill="#ffffff"></rect><rect id="rm119" height="53" width="49" y="209.45" x="211.5" stroke-width="1.5" stroke="#000000" fill="#ffffff"></rect><rect id="rm121" height="53" width="49" y="97.45" x="212.5" stroke-width="1.5" stroke="#000000" fill="#ffffff"></rect><rect id="rm112" height="53" width="49" y="211.45" x="109.5" stroke-width="1.5" stroke="#000000" fill="#ffffff"></rect><rect id="rm113" height="53" width="49" y="209.45" x="57.5" stroke-width="1.5" stroke="#000000" fill="#ffffff"></rect><rect id="rm104" height="57" width="53" y="151.45" x="57.5" stroke-width="1.5" stroke="#000000" fill="#ffffff"></rect>
+					-->
+				  		</g>
+				  	</svg>
+				  </div>
+				 	<!--
+				 		Need to to push the SVG into this.
+				 	-->
+				</div>
 			
-			<!-- Four -->
-<!--				<section id="four" class="wrapper style1 special fade-up">
-					<div class="container">
-						<header class="major">
-							<h2>Accumsan sed tempus adipiscing blandit</h2>
-							<p>Iaculis ac volutpat vis non enim gravida nisi faucibus posuere arcu consequat</p>
-						</header>
-						<div class="box alt">
-							<div class="row uniform">
-								<section class="4u 6u(medium) 12u$(xsmall)">
-									<span class="icon alt major fa-area-chart"></span>
-									<h3>Ipsum sed commodo</h3>
-									<p>Feugiat accumsan lorem eu ac lorem amet accumsan donec. Blandit orci porttitor.</p>
-								</section>
-								<section class="4u 6u$(medium) 12u$(xsmall)">
-									<span class="icon alt major fa-comment"></span>
-									<h3>Eleifend lorem ornare</h3>
-									<p>Feugiat accumsan lorem eu ac lorem amet accumsan donec. Blandit orci porttitor.</p>
-								</section>
-								<section class="4u$ 6u(medium) 12u$(xsmall)">
-									<span class="icon alt major fa-flask"></span>
-									<h3>Cubilia cep lobortis</h3>
-									<p>Feugiat accumsan lorem eu ac lorem amet accumsan donec. Blandit orci porttitor.</p>
-								</section>
-								<section class="4u 6u$(medium) 12u$(xsmall)">
-									<span class="icon alt major fa-paper-plane"></span>
-									<h3>Non semper interdum</h3>
-									<p>Feugiat accumsan lorem eu ac lorem amet accumsan donec. Blandit orci porttitor.</p>
-								</section>
-								<section class="4u 6u(medium) 12u$(xsmall)">
-									<span class="icon alt major fa-file"></span>
-									<h3>Odio laoreet accumsan</h3>
-									<p>Feugiat accumsan lorem eu ac lorem amet accumsan donec. Blandit orci porttitor.</p>
-								</section>
-								<section class="4u$ 6u$(medium) 12u$(xsmall)">
-									<span class="icon alt major fa-lock"></span>
-									<h3>Massa arcu accumsan</h3>
-									<p>Feugiat accumsan lorem eu ac lorem amet accumsan donec. Blandit orci porttitor.</p>
-								</section>
-							</div>
-						</div>
-						<footer class="major">
-							<ul class="actions">
-								<li><a href="#" class="button">Magna sed feugiat</a></li>
-							</ul>
-						</footer>
-					</div>
 				</section>
-!-->
-			<!-- Five -->
-<!--
-				<section id="five" class="wrapper style2 special fade">
-					<div class="container">
-						<header>
-							<h2>Magna faucibus lorem diam</h2>
-							<p>Ante metus praesent faucibus ante integer id accumsan eleifend</p>
-						</header>
-						<form method="post" action="#" class="container 50%">
-							<div class="row uniform 50%">
-								<div class="8u 12u$(xsmall)"><input type="email" name="email" id="email" placeholder="Your Email Address" /></div>
-								<div class="4u$ 12u$(xsmall)"><input type="submit" value="Get Started" class="fit special" /></div>
-							</div>
-						</form>
-					</div>
-				</section>
-!-->
+
 			<!-- Footer -->
 				<footer id="footer">
 					<ul class="icons">
@@ -267,5 +223,8 @@
 			<script src="assets/js/imageMapResizer.min.js"></script>
 			<script src="assets/js/bootstrap-modal.js"></script>
 			<script src="assets/js/bootstrap-modalmanager.js"></script>
+			<script src="assets/js/remodal.min.js"></script>
+
+			
 	</body>
 </html>

@@ -78,6 +78,27 @@ map, area {
 .custom-menu li:hover {
     background-color: #DEF;
 }
+.svg-container { 
+	display: inline-block;
+	position: relative;
+	width: 100%;
+	padding-bottom: 100%; 
+	vertical-align: middle; 
+	overflow: hidden; 
+}
+#svg-map {
+	display: inline-block;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+/*ReModal Implementation*/
+#Modal-Head1, #modal-floorshead, #modal-blueprinthead {
+	color: #E7746F;
+	font-weight: 200;
+	font-size: 25px;
+}
 
 /* Reset */
 
