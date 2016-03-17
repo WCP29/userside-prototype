@@ -282,32 +282,27 @@ function whatFloorClick() {
 		floorModal.close();
 		blueprint = $('[data-remodal-id=blueprintModal]').remodal();
 		blueprint.open();
-		console.log('worked.');
 	})
 }
 
-function sqrExp(x) {return (x*x);}
 
-function lineDist(a,b) {return (parseFloat(a.x) - parseFloat(b.x)) + sqrExp(parseFloat(a.y)-parseFloat(b.y));}
-
-function distToLineSquared(point, a, b) {
-	var lineDistance = lineDist(a,b);
-	var result = parseFloat((point.x - a.x) * (b.x - a.x) + (point.y - a.y) * (b.y - a.y)) / parseFloat(lineDistance);
-	
-	// If result is less than zero, calculate the distance from the starting point of the line, a.
-	if (result < 0) {return lineDist(point,a);}
-	// If result is greater than one, calculate the distance from the end point of the line, b.
-	if (result > 1) {return lineDist(point, b);}
-	// If result the point is along the line, then find the point on the line:
-	var pointonLine = {x: a.x + result * (b.x-a.x), 
-					   y: a.y + result * (b.y-a.y)};
-	// Return the distance from the point clicked on and the point respective to the line:
-	return lineDist(point, pointonLine);
+function sqrExp(x) { return x * x }
+function lineDist(a, b) { return sqrExp(a.x - b.x) + sqrExp(a.y - b.y) }
+function distToSegmentSquared(point, a, b) {
+  var lineDistanceSq = lineDist(a, b);
+  if (lineDistanceSq == 0) return lineDist(point, a);   //This was originally causing the NaN values! The line is essentially a point.
+  var result = ((point.x - a.x) * (b.x - a.x) + (point.y - a.y) * (b.y - a.y)) / lineDistanceSq;
+  	// If result is less than zero, calculate the distance from the starting point of the line, a.
+  if (result < 0) return lineDist(point, a);
+  	// If result is greater than one, calculate the distance from the end point of the line, b.
+  if (result > 1) return lineDist(point, b);
+  	// If result the point is along the line, then find the point on the line:
+  return lineDist(point, { x: a.x + result * (b.x - a.x),
+                    y: a.y + result * (b.y - a.y) });
 }
-
-// Function to find the true minimum distance between a point that we clicked and a line segment with ends, a and b:
-function distToLineFinal(point, a, b) {
-	return Math.sqrt(distToLineSquared(point, a, b));
+// Return minimum distance between line segment vw and point p
+function distToLineFinal(point, a, b) { 
+	return Math.sqrt(distToSegmentSquared(point, a, b));
 }
 
 function pathNearestToClick() {
@@ -323,24 +318,22 @@ function pathNearestToClick() {
 		            dataType: "json",
 		            data: { building_clicked : selectedBuilding, floor_clicked : floorClicked},
 		            success: function(response){ 
-		            	console.log(response);
 		            	var shortestDistance = '';
 		            	var pathName = '';
-		            	
+		            		console.log('point is:' + point.x + ',' + point.y);
 		            	  //Test each value to see if the point clicked is close to the line clicked:
 						    for (var i = 0; i < response.length; i++) {
-						    		var distance = distToLineFinal(point, {x:response[i].x1Cord, y:response[i].y1Cord}, {x:response[i].x2Cord, y:response[i].y2Cord});
-						    		console.log('Distance to ' + response[i].svg_id + ':\n');
+						    		var distance = distToLineFinal(point, {x:parseFloat(response[i].x1Cord), y:parseFloat(response[i].y1Cord)}, {x:parseFloat(response[i].x2Cord), y:parseFloat(response[i].y2Cord)});
 						    		console.log(distance);
-						    		if (shortestDistance == '') {
-						    			shortestDistance = distance;
-						    		}
-						    		else if (shortestDistance > distance) {
-						    			shortestDistance = distance;
-						    			pathName = response[i].svg_id;
-						    		}
+							    		if (shortestDistance == '') {
+							    			shortestDistance = distance;
+							    		}
+							    		else if (shortestDistance > distance) {
+							    			shortestDistance = distance;
+							    			pathName = response[i].svg_id;
+							    		}
 						    }
-		            		console.log('Shortest Distance is: \n' + pathName + ': ' + distance + '\n');
+		            		console.log('Shortest Distance is: \n' + pathName + ': ' + shortestDistance + '\n');
 		            },
 		            error: function(XMLHttpRequest, textStatus, errorThrown) { 
 		                console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
@@ -348,11 +341,6 @@ function pathNearestToClick() {
 		        });
 	})
 }
-
-
-
-
-
 
 function whatRoomClicked() {
 	$('#').on('click', function() {
