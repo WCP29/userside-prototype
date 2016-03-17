@@ -22,6 +22,7 @@ $(document).ready(function() {
 	clickMap();
 	clickRoomsModal();
 	whatFloorClick();
+	pathNearestToClick();
 
 
 });
@@ -224,21 +225,19 @@ function whatFloorClick() {
 		            url: "UIgrabMap.php",
 		            dataType: "json",
 		            data: { building_clicked : selectedBuilding, floor_clicked : floorClicked},
-		            success: function(response){  
-		            	
+		            success: function(response){
+		            	$("#displayBlues").empty();
 		                for (var i = 0; i < response.length; i++) {
-		                /*	$('#displayBlues').empty().append('<rect id="rm' + response[i].svg_id + '" height="' + response[i].height + '" width="' +
-		                	response[i].width + '" y="' + response[i].yCord + '" x="' + response[i].xCord + '" stroke-width="1.5" stroke="#000000" fill="#ffffff" />');
-		               */
-		               
-		                var newRect = document.createElementNS('http://www.w3.org/2000/svg','rect');
-					    newRect.setAttribute('id', response[i].svg_id);
-					    newRect.setAttribute('height',response[i].height);
-					    newRect.setAttribute('width',response[i].width );
-					    newRect.setAttribute('y',response[i].yCord );
-					    newRect.setAttribute('x',response[i].xCord);
-					    $("#displayBlues").empty().append(newRect);
+			                var newRect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+						    newRect.setAttribute('id', response[i].svg_id);
+						    newRect.setAttribute('height',response[i].height);
+						    newRect.setAttribute('width',response[i].width);
+						    newRect.setAttribute('y',response[i].yCord );
+						    newRect.setAttribute('x',response[i].xCord);
+						    $("#displayBlues").append(newRect);
 		                }
+
+
 		            },
 		            error: function(XMLHttpRequest, textStatus, errorThrown) { 
 		                console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
@@ -256,24 +255,16 @@ function whatFloorClick() {
 		            dataType: "json",
 		            data: { building_clicked : selectedBuilding, floor_clicked : floorClicked},
 		            success: function(response){ 
-		            	
+		            	$("#displayBlues").empty();
 		                 for (var i = 0; i < response.length; i++) {
-		                	 /*	$('#displayBlues').empty().append('<rect id="rm' + response[i].svg_id + '" height="' + response[i].height + '" width="' +
-		                	response[i].width + '" y="' + response[i].yCord + '" x="' + response[i].xCord + '" stroke-width="1.5" stroke="#000000" fill="#ffffff" />');
-		               */
-		               
-		                var newRect = document.createElementNS('http://www.w3.org/2000/svg','rect');
-					    newRect.setAttribute('id', response[i].svg_id);
-					    newRect.setAttribute('height',response[i].height);
-					    newRect.setAttribute('width',response[i].width );
-					    newRect.setAttribute('y',response[i].yCord );
-					    newRect.setAttribute('x',response[i].xCord);
-					    $("#displayBlues").empty().append(newRect);
-		                 	
-		                 	
-		                 	
+			                var newRect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+						    newRect.setAttribute('id', response[i].svg_id);
+						    newRect.setAttribute('height',response[i].height);
+						    newRect.setAttribute('width',response[i].width );
+						    newRect.setAttribute('y',response[i].yCord );
+						    newRect.setAttribute('x',response[i].xCord);
+						    $("#displayBlues").append(newRect);
 		                 }
-		                
 		            },
 		            error: function(XMLHttpRequest, textStatus, errorThrown) { 
 		                console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
@@ -290,6 +281,21 @@ function whatFloorClick() {
 		console.log('worked.');
 	})
 }
+
+function pathNearestToClick() {
+	$('#displayBlues').on('click', function (event){
+		window.current_x = Math.round(event.pageX - $('#displayBlues').offset().left);
+        window.current_y = Math.round(event.pageY - $('#displayBlues').offset().top);
+        window.current_coords = window.current_x + ', ' + window.current_y;
+        return {x: window.current_x, y:window.current_y};
+	})
+}
+
+
+
+
+
+
 function whatRoomClicked() {
 	$('#').on('click', function() {
 		
