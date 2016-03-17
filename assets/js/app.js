@@ -2,6 +2,8 @@ var selectedBuilding = '';
 var inst = '';
 var floorModal = '';
 var blueprint = '';
+var point = {};
+var floorClicked = '';
 
 $(document).ready(function() {
 	console.log('jQuery running properly');
@@ -209,7 +211,7 @@ function clickRoomsModal() {
 }
 function whatFloorClick() {
 	$('#floor-1, #floor-2').on('click', function(e) {
-		var floorClicked = $(this).attr('id');
+		floorClicked = $(this).attr('id');
 		e.preventDefault();
 		
 			switch(floorClicked) {
@@ -226,6 +228,7 @@ function whatFloorClick() {
 		            dataType: "json",
 		            data: { building_clicked : selectedBuilding, floor_clicked : floorClicked},
 		            success: function(response){
+		            	//console.log(response);
 		            	$("#displayBlues").empty();
 		                for (var i = 0; i < response.length; i++) {
 			                var newRect = document.createElementNS('http://www.w3.org/2000/svg','rect');
@@ -254,7 +257,8 @@ function whatFloorClick() {
 		            url: "UIgrabMap.php", 
 		            dataType: "json",
 		            data: { building_clicked : selectedBuilding, floor_clicked : floorClicked},
-		            success: function(response){ 
+		            success: function(response){
+		            	//console.log(response);
 		            	$("#displayBlues").empty();
 		                 for (var i = 0; i < response.length; i++) {
 			                var newRect = document.createElementNS('http://www.w3.org/2000/svg','rect');
@@ -282,12 +286,66 @@ function whatFloorClick() {
 	})
 }
 
+function sqrExp(x) {return (x*x);}
+
+function lineDist(a,b) {return (parseFloat(a.x) - parseFloat(b.x)) + sqrExp(parseFloat(a.y)-parseFloat(b.y));}
+
+function distToLineSquared(point, a, b) {
+	var lineDistance = lineDist(a,b);
+	var result = parseFloat((point.x - a.x) * (b.x - a.x) + (point.y - a.y) * (b.y - a.y)) / parseFloat(lineDistance);
+	
+	// If result is less than zero, calculate the distance from the starting point of the line, a.
+	if (result < 0) {return lineDist(point,a);}
+	// If result is greater than one, calculate the distance from the end point of the line, b.
+	if (result > 1) {return lineDist(point, b);}
+	// If result the point is along the line, then find the point on the line:
+	var pointonLine = {x: a.x + result * (b.x-a.x), 
+					   y: a.y + result * (b.y-a.y)};
+	// Return the distance from the point clicked on and the point respective to the line:
+	return lineDist(point, pointonLine);
+}
+
+// Function to find the true minimum distance between a point that we clicked and a line segment with ends, a and b:
+function distToLineFinal(point, a, b) {
+	return Math.sqrt(distToLineSquared(point, a, b));
+}
+
 function pathNearestToClick() {
 	$('#displayBlues').on('click', function (event){
 		window.current_x = Math.round(event.pageX - $('#displayBlues').offset().left);
         window.current_y = Math.round(event.pageY - $('#displayBlues').offset().top);
         window.current_coords = window.current_x + ', ' + window.current_y;
-        return {x: window.current_x, y:window.current_y};
+        point = {x: window.current_x, y:window.current_y};
+        
+        $.ajax({    //create an ajax request to load_page.php
+		            type: "GET",
+		            url: "getPaths.php", 
+		            dataType: "json",
+		            data: { building_clicked : selectedBuilding, floor_clicked : floorClicked},
+		            success: function(response){ 
+		            	console.log(response);
+		            	var shortestDistance = '';
+		            	var pathName = '';
+		            	
+		            	  //Test each value to see if the point clicked is close to the line clicked:
+						    for (var i = 0; i < response.length; i++) {
+						    		var distance = distToLineFinal(point, {x:response[i].x1Cord, y:response[i].y1Cord}, {x:response[i].x2Cord, y:response[i].y2Cord});
+						    		console.log('Distance to ' + response[i].svg_id + ':\n');
+						    		console.log(distance);
+						    		if (shortestDistance == '') {
+						    			shortestDistance = distance;
+						    		}
+						    		else if (shortestDistance > distance) {
+						    			shortestDistance = distance;
+						    			pathName = response[i].svg_id;
+						    		}
+						    }
+		            		console.log('Shortest Distance is: \n' + pathName + ': ' + distance + '\n');
+		            },
+		            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+		                console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
+		            }  
+		        });
 	})
 }
 
