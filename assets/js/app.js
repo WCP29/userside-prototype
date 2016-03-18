@@ -3,7 +3,11 @@ var inst = '';
 var floorModal = '';
 var blueprint = '';
 var point = {};
+var secondPoint = {};
 var floorClicked = '';
+var clickCount = 0;
+var closestEdgeC1 = '';
+var closestEdgeC2 = '';
 
 $(document).ready(function() {
 	console.log('jQuery running properly');
@@ -24,7 +28,11 @@ $(document).ready(function() {
 	clickMap();
 	clickRoomsModal();
 	whatFloorClick();
-	pathNearestToClick();
+	//pathNearestToClick();
+	coordinatesFloor();
+
+
+	//dijsktraAttempt('I','G');
 
 
 });
@@ -305,14 +313,26 @@ function distToLineFinal(point, a, b) {
 	return Math.sqrt(distToSegmentSquared(point, a, b));
 }
 
-function pathNearestToClick() {
+function coordinatesFloor() {
 	$('#displayBlues').on('click', function (event){
 		window.current_x = Math.round(event.pageX - $('#displayBlues').offset().left);
         window.current_y = Math.round(event.pageY - $('#displayBlues').offset().top);
         window.current_coords = window.current_x + ', ' + window.current_y;
-        point = {x: window.current_x, y:window.current_y};
-        
-        $.ajax({    //create an ajax request to load_page.php
+        clickCount++;
+        if (clickCount == 1) {
+        	point = {x: window.current_x, y:window.current_y};
+        	pathNearestToClick(point, closestEdgeC1)
+        }
+        else if(clickCount == 2) {
+        	secondPoint = {x: window.current_x, y:window.current_y};
+        	//console.log('secondClick:' + secondPoint);
+        	pathNearestToClick(secondPoint);
+        }
+	});
+}
+
+function pathNearestToClick(clickedSection) {
+        $.ajax({    //create an ajax request to getPaths.php
 		            type: "GET",
 		            url: "getPaths.php", 
 		            dataType: "json",
@@ -320,26 +340,84 @@ function pathNearestToClick() {
 		            success: function(response){ 
 		            	var shortestDistance = '';
 		            	var pathName = '';
-		            		console.log('point is:' + point.x + ',' + point.y);
 		            	  //Test each value to see if the point clicked is close to the line clicked:
 						    for (var i = 0; i < response.length; i++) {
-						    		var distance = distToLineFinal(point, {x:parseFloat(response[i].x1Cord), y:parseFloat(response[i].y1Cord)}, {x:parseFloat(response[i].x2Cord), y:parseFloat(response[i].y2Cord)});
-						    		console.log(distance);
+						    		var distance = distToLineFinal(clickedSection, {x:parseFloat(response[i].x1Cord), y:parseFloat(response[i].y1Cord)}, {x:parseFloat(response[i].x2Cord), y:parseFloat(response[i].y2Cord)});
+						    		console.log('Distance from: ' + response[i].svg_id+': ' + distance);
 							    		if (shortestDistance == '') {
 							    			shortestDistance = distance;
+							    			pathName = response[i].svg_id;
 							    		}
 							    		else if (shortestDistance > distance) {
 							    			shortestDistance = distance;
 							    			pathName = response[i].svg_id;
 							    		}
 						    }
-		            		console.log('Shortest Distance is: \n' + pathName + ': ' + shortestDistance + '\n');
+						    if (clickCount == 1) {
+		            			console.log('The edge closest to ' + clickCount +  'st click: '+ clickedSection.x + ',' + clickedSection.y + ' is: \n' + pathName + ': ' + shortestDistance + '\n');
+		            			closestEdgeC1 = pathName;
+						    }
+		            		// If you clicked twice, pass the closest paths to each click to find fastest path function:
+		            		else if (clickCount == 2) {
+		            			closestEdgeC2 = pathName;
+		            			console.log('The edge closest to ' + clickCount +  'nd click: '+ clickedSection.x + ',' + clickedSection.y + ' is: \n' + pathName + ': ' + shortestDistance + '\n');
+		            			// Only needs the first letter of each path.
+		            			console.log(closestEdgeC1.charAt(0));
+		            			console.log(closestEdgeC2.charAt(1));
+		            			
+		            			dijsktraAttempt(closestEdgeC1.charAt(0), closestEdgeC2.charAt(1));
+		            			clickCount = 0;
+		            		}
+		            
 		            },
 		            error: function(XMLHttpRequest, textStatus, errorThrown) { 
 		                console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
 		            }  
 		        });
-	})
+		        
+		        ///////ATTEMPT AT MAKING IT DONE IN PHP
+		        /*
+		        $.ajax({    //create an ajax request to load_page.php
+		            type: "GET",
+		            url: "testPointLine.php",
+		            data: { building_clicked : selectedBuilding, floor_clicked : floorClicked, point : JSON.stringify(point)},
+		            success: function(response){ 
+		            	console.log(response);
+		            },
+		            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+		                console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
+		            }  
+		        });
+		        */
+		        
+}
+function createArray(length) {
+	var arr = new Array(length || 0),
+    i = length;
+
+    if (arguments.length > 1) {
+      	var args = Array.prototype.slice.call(arguments, 1);
+        while(i--) arr[length-1 - i] = createArray.apply(this, args);
+    }
+
+    return arr;
+	}
+
+
+function dijsktraAttempt(start, end) {
+	var map = { 
+		A:{B: 82},
+		B:{C: 145, F: 121},
+		C:{D: 83},
+		D:{C: 83},
+		G:{F:136},
+		F:{H:47, G: 136, B: 121},
+		H:{I:213, F:47},
+		I:{H: 213}
+	};
+	var graph = new Graph(map);
+	console.log(graph.findShortestPath(start, end));
+
 }
 
 function whatRoomClicked() {
