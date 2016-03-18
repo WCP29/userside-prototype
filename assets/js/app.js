@@ -365,7 +365,7 @@ function pathNearestToClick(clickedSection) {
 		            			console.log(closestEdgeC1.charAt(0));
 		            			console.log(closestEdgeC2.charAt(1));
 		            			
-		            			dijsktraAttempt(closestEdgeC1.charAt(0), closestEdgeC2.charAt(1));
+		            			dijsktraAttempt(closestEdgeC1, closestEdgeC2, response);
 		            			clickCount = 0;
 		            		}
 		            
@@ -404,7 +404,7 @@ function createArray(length) {
 	}
 
 
-function dijsktraAttempt(start, end) {
+function dijsktraAttempt(start, end, data) {
 	var map = { 
 		A:{B: 82},
 		B:{C: 145, F: 121},
@@ -416,8 +416,42 @@ function dijsktraAttempt(start, end) {
 		I:{H: 213}
 	};
 	var graph = new Graph(map);
-	console.log(graph.findShortestPath(start, end));
-
+	
+	var shortestPath = graph.findShortestPath(start.charAt(0), end.charAt(1));
+	
+	console.log(shortestPath);
+	
+	// Time to draw the path:
+	
+	// First delete any pre-existing routes:
+	$('#displayBlues').find('line').remove();
+	for (var i = 0; i <shortestPath.length-1; i++) {
+			//Every shortest path will refer to an edge, makeEdge. MakeEdge is from the DB.
+			var makeEdge = shortestPath[i] + shortestPath[i+1];
+			console.log('Combining: ' + i + ',' + i + '+1 : ' + makeEdge);
+			
+			// Go through the data array and find the right SVG element so we can draw its path:
+			 var edgeStoredIn = '';
+			 for (var j = 0; j < data.length; j++) {
+        		if (data[j].svg_id == makeEdge) {
+        			//console.log('datasvg id: ' + data[j].svg_id + '\n');
+            		edgeStoredIn = j;
+        		}
+		 	}
+			//Draw the edge that contributes to the overall route:
+			var newPath = document.createElementNS('http://www.w3.org/2000/svg','line');
+			newPath.setAttribute('id', data[edgeStoredIn].svg_id);
+			newPath.setAttribute('x1', data[edgeStoredIn].x1Cord);
+			newPath.setAttribute('y1', data[edgeStoredIn].y1Cord);
+			newPath.setAttribute('x2', data[edgeStoredIn].x2Cord);
+			newPath.setAttribute('y2', data[edgeStoredIn].y2Cord);
+			newPath.setAttribute('stroke','#000000');
+			newPath.setAttribute('stroke-width', '12.5');
+			newPath.setAttribute('fill', 'none');
+			/// Then show the new route we just made:
+			$("#displayBlues").append(newPath);
+	}
+	
 }
 
 function whatRoomClicked() {
