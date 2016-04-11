@@ -227,65 +227,50 @@ function whatFloorClick() {
 	        // A case for each action. Your actions here
 	        case "floor-1": 
 	        	floorClicked = "Floor 1";
-	        	$('#modal-blueprinthead').empty().append(selectedBuilding + ' - ' + floorClicked);
-	        	// Send call to server to grab information from SQL to draw out the SVG:
+	        	break;
 	        	
-	        	$.ajax({    //create an ajax request to load_page.php
+	        case "floor-2":
+	        	floorClicked = "Floor 2";
+		        break;
+		        
+		     case "floor-3":
+		     	floorClicked = "Floor 3";
+		     	break;
+		        
+	        default:
+	        		break;
+	    }
+	    $('#modal-blueprinthead').empty().append(selectedBuilding + ' - ' + floorClicked);
+	    
+	    	$.ajax({    //create an ajax request to load_page.php
 		            type: "GET",
 		            url: "UIgrabMap.php",
 		            dataType: "json",
 		            data: { building_clicked : selectedBuilding, floor_clicked : floorClicked},
 		            success: function(response){
 		            	//console.log(response);
+		            	
 		            	$("#displayBlues").empty();
 		                for (var i = 0; i < response.length; i++) {
 			                var newRect = document.createElementNS('http://www.w3.org/2000/svg','rect');
 						    newRect.setAttribute('id', response[i].svg_id);
-						    newRect.setAttribute('height',response[i].height);
-						    newRect.setAttribute('width',response[i].width);
+						    newRect.setAttribute('height',42);
+						    newRect.setAttribute('width',55);
 						    newRect.setAttribute('y',response[i].yCord );
 						    newRect.setAttribute('x',response[i].xCord);
+						    newRect.setAttribute('fill', '#fff');
+						    newRect.setAttribute('stroke','#000');
 						    $("#displayBlues").append(newRect);
 		                }
 
-
+						
 		            },
 		            error: function(XMLHttpRequest, textStatus, errorThrown) { 
 		                console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
 		            }  
 		        });
-	        	break;
-	        	
-	        case "floor-2":
-	        	floorClicked = "Floor 2";
-	        	$('#modal-blueprinthead').empty().append(selectedBuilding + ' - ' + floorClicked);
-	        	
-	        	$.ajax({    //create an ajax request to load_page.php
-		            type: "GET",
-		            url: "UIgrabMap.php", 
-		            dataType: "json",
-		            data: { building_clicked : selectedBuilding, floor_clicked : floorClicked},
-		            success: function(response){
-		            	//console.log(response);
-		            	$("#displayBlues").empty();
-		                 for (var i = 0; i < response.length; i++) {
-			                var newRect = document.createElementNS('http://www.w3.org/2000/svg','rect');
-						    newRect.setAttribute('id', response[i].svg_id);
-						    newRect.setAttribute('height',response[i].height);
-						    newRect.setAttribute('width',response[i].width );
-						    newRect.setAttribute('y',response[i].yCord );
-						    newRect.setAttribute('x',response[i].xCord);
-						    $("#displayBlues").append(newRect);
-		                 }
-		            },
-		            error: function(XMLHttpRequest, textStatus, errorThrown) { 
-		                console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
-		            }  
-		        });
-		        
-	        default:
-	        		break;
-	    }
+	    
+	    
 		
 		floorModal.close();
 		blueprint = $('[data-remodal-id=blueprintModal]').remodal();
@@ -340,7 +325,9 @@ function pathNearestToClick(clickedSection) {
 		            success: function(response){ 
 		            	var shortestDistance = '';
 		            	var pathName = '';
+		            	console.log(response);
 		            	  //Test each value to see if the point clicked is close to the line clicked:
+		            	  /*
 						    for (var i = 0; i < response.length; i++) {
 						    		var distance = distToLineFinal(clickedSection, {x:parseFloat(response[i].x1Cord), y:parseFloat(response[i].y1Cord)}, {x:parseFloat(response[i].x2Cord), y:parseFloat(response[i].y2Cord)});
 						    		console.log('Distance from: ' + response[i].svg_id+': ' + distance);
@@ -365,10 +352,10 @@ function pathNearestToClick(clickedSection) {
 		            			console.log(closestEdgeC1.charAt(0));
 		            			console.log(closestEdgeC2.charAt(1));
 		            			
-		            			dijsktraAttempt(closestEdgeC1, closestEdgeC2, response);
+		            		//	dijsktraAttempt(closestEdgeC1, closestEdgeC2, response);
 		            			clickCount = 0;
 		            		}
-		            
+		            */
 		            },
 		            error: function(XMLHttpRequest, textStatus, errorThrown) { 
 		                console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
