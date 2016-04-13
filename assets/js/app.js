@@ -415,19 +415,8 @@ function pathNearestToClick(clickedSection) {
 		            			console.log('Shortest distance to node on path is: ' + shortestDistance + ': ' + closestNode );
 		            			
 						    }
-						    
-		            		// If you clicked twice, pass the closest paths to each click to find fastest path function:
-		            		/*
-		            		else if (clickCount == 2) {
-		            			closestEdgeC2 = pathName;
-		            			click2X = clickedSection.x;
-		            			click2Y = clickedSection.y;
-		            			console.log('The edge closest to ' + clickCount +  'nd click: '+ clickedSection.x + ',' + clickedSection.y + ' is: \n' + pathName + ': ' + shortestDistance + '\n');
-		            			//dijsktraDraw(closestEdgeC1, closestEdgeC2, click1X, click1Y, click2X, click2Y, response);
-		            		}
-		            		*/
-		            		clickCount = 0;
-		            
+						    clickCount = 0;
+						    dijsktraDraw(closestNode, , clickedObject);
 		            },
 		            error: function(XMLHttpRequest, textStatus, errorThrown) { 
 		                console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
