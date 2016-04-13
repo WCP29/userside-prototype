@@ -84,18 +84,20 @@
             echo "0 results";
         }
         // For every path we have found, grab its node_id and neighbor_id
-        $tempLocationsStored = array();
+        //$tempLocationsStored = array();
         foreach ($pathsStored as $info) {
             $starter = $info->node_id;
             $ender = $info->neighbor_id;
             // Get the X and Y coordinates of the node_id and neighbor_id
-            $sql = "SELECT x, y FROM location WHERE id = $starter  OR id = $ender;";
+            $sql = "SELECT id, x, y FROM location WHERE id = $starter  OR id = $ender;";
             //echo $sql;
             $result = $connection->query($sql);
            if ($result->num_rows > 0) {
                 // output data of each row
+                $tempLocationsStored = array();
                 while($row = $result->fetch_assoc()) {
                     $obj = new stdClass;
+                    $obj->locID = $row["id"];
                     $obj->xCord = $row["x"];
                     $obj->yCord = $row["y"];
                     array_push($tempLocationsStored, $obj);
@@ -103,9 +105,10 @@
                 //echo json_encode($tempLocationsStored);
                 //$actualPathsArray = array();
                 $obj = new stdClass;
-                $obj->id = $pathID;
+                $obj->pointOne = $tempLocationsStored[0]->locID;
                 $obj->x1Cord = $tempLocationsStored[0]->xCord;
                 $obj->y1Cord = $tempLocationsStored[0]->yCord;
+                $obj->pointTwo = $tempLocationsStored[1]->locID;
                 $obj->x2Cord = $tempLocationsStored[1]->xCord;
                 $obj->y2Cord = $tempLocationsStored[1]->yCord;
                 array_push($actualPathsArray, $obj);
@@ -116,8 +119,8 @@
                 echo "Didnt find node or neighbor";
             }
         }
-       echo json_encode($tempLocationsStored);
-       //echo json_encode($actualPathsArray);
+       //echo json_encode($tempLocationsStored);
+       echo json_encode($actualPathsArray);
            
     $connection->close();
     

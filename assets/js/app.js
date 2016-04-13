@@ -8,6 +8,13 @@ var floorClicked = '';
 var clickCount = 0;
 var closestEdgeC1 = '';
 var closestEdgeC2 = '';
+var startNode = '';
+var click1X = '';
+var click2X = '';
+var click1Y = '';
+var click2Y = '';
+var shortestPointDist = '';
+var closestNode = '';
 
 $(document).ready(function() {
 	console.log('jQuery running properly');
@@ -306,7 +313,7 @@ function coordinatesFloor() {
         clickCount++;
         if (clickCount == 1) {
         	point = {x: window.current_x, y:window.current_y};
-        	pathNearestToClick(point, closestEdgeC1)
+        	pathNearestToClick(point)
         }
         else if(clickCount == 2) {
         	secondPoint = {x: window.current_x, y:window.current_y};
@@ -323,51 +330,121 @@ function pathNearestToClick(clickedSection) {
 		            dataType: "json",
 		            data: { building_clicked : selectedBuilding, floor_clicked : floorClicked},
 		            success: function(response){ 
+		            console.log(response);
 		            	var shortestDistance = '';
 		            	var pathName = '';
-		            	console.log(response);
+		            	
 		            	  //Test each value to see if the point clicked is close to the line clicked:
-		            	  /*
+		            	  
 						    for (var i = 0; i < response.length; i++) {
 						    		var distance = distToLineFinal(clickedSection, {x:parseFloat(response[i].x1Cord), y:parseFloat(response[i].y1Cord)}, {x:parseFloat(response[i].x2Cord), y:parseFloat(response[i].y2Cord)});
-						    		console.log('Distance from: ' + response[i].svg_id+': ' + distance);
+						    	//	console.log('Distance from path: ' + response[i].pointOne + ',' + response[i].pointTwo + ': \n ' + distance);
 							    		if (shortestDistance == '') {
 							    			shortestDistance = distance;
-							    			pathName = response[i].svg_id;
+							    			pathName = response[i].pointOne + ',' + response[i].pointTwo;
 							    		}
 							    		else if (shortestDistance > distance) {
 							    			shortestDistance = distance;
-							    			pathName = response[i].svg_id;
+							    			startNode = response[i].pointOne;
+							    			pathName = response[i].pointOne + ',' + response[i].pointTwo;
 							    		}
 						    }
-						    if (clickCount == 1) {
-		            			console.log('The edge closest to ' + clickCount +  'st click: '+ clickedSection.x + ',' + clickedSection.y + ' is: \n' + pathName + ': ' + shortestDistance + '\n');
-		            			closestEdgeC1 = pathName;
+						    
+						    // GO FOR NEAREST NODE INSTEAD!
+						    /*
+						    for (var i = 0; i < response.length; i++) {
+						    	
+						    		var distance = 0;
+							    		if (shortestDistance == '') {
+							    			shortestDistance = distance;
+							    			pathName = response[i].pointOne + ',' + response[i].pointTwo;
+							    		}
+							    		else if (shortestDistance > distance) {
+							    			shortestDistance = distance;
+							    			startNode = response[i].pointOne;
+							    			pathName = response[i].pointOne + ',' + response[i].pointTwo;
+							    		}
 						    }
+						    */
+						
+						    if (clickCount == 1) {
+		            			//console.log('The edge closest to ' + clickCount +  'st click: '+ clickedSection.x + ',' + clickedSection.y + ' is: \n' + pathName + ': ' + shortestDistance + '\n');
+		            			click1X = clickedSection.x;
+		            			click1Y = clickedSection.y;
+		            			clickedObject = {
+		            								x: click1X,
+		            								y: click1Y
+		            							};
+		            			closestEdgeC1 = pathName;
+		            			//console.log('closest edge is: ' + closestEdgeC1);
+		            			var splitEdge = closestEdgeC1.split(",");
+		            			//console.log('0: ' + splitEdge[0] + '\n' + '1: ' + splitEdge[1] + '\n')
+		            			 for (var i = 0; i < response.length; i++) {
+		            			 	if (response[i].pointOne == splitEdge[0]) {
+		            			 		locObject = {
+		            			 						x: response[i].x1Cord ,
+		            			 						y: response[i].y1Cord
+		            			 					}
+		            			 		var disPoints = lineDist(clickedObject, locObject);
+		            			 		if (shortestPointDist == '') {
+		            			 			shortestPointDist = disPoints;
+		            			 			closestNode = response[i].pointTwo;
+		            			 		}
+		            			 		else if (disPoints < shortestPointDist) {
+		            			 			shortestPointDist = disPoints;
+		            			 			closestNode = response[i].pointOne;
+		            			 		}
+		            			 	}	
+		            			 	else if (response[i].pointTwo == splitEdge[1]) {
+		            			 		locObject = {
+		            			 						x: response[i].x2Cord ,
+		            			 						y: response[i].y2Cord
+		            			 					}
+		            			 		var disPoints = lineDist(clickedObject, locObject);
+		            			 		if (shortestPointDist == '') {
+		            			 			shortestPointDist = disPoints;
+		            			 			closestNode = response[i].pointTwo;
+		            			 		}
+		            			 		else if (disPoints < shortestPointDist) {
+		            			 			shortestPointDist = disPoints;
+		            			 			closestNode = response[i].pointTwo;
+		            			 			
+		            			 		}
+		            			 	}
+		            			 }
+		            			console.log('Shortest distance to node on path is: ' + shortestDistance + ': ' + closestNode );
+		            			
+						    }
+						    
 		            		// If you clicked twice, pass the closest paths to each click to find fastest path function:
+		            		/*
 		            		else if (clickCount == 2) {
 		            			closestEdgeC2 = pathName;
+		            			click2X = clickedSection.x;
+		            			click2Y = clickedSection.y;
 		            			console.log('The edge closest to ' + clickCount +  'nd click: '+ clickedSection.x + ',' + clickedSection.y + ' is: \n' + pathName + ': ' + shortestDistance + '\n');
-		            			// Only needs the first letter of each path.
-		            			console.log(closestEdgeC1.charAt(0));
-		            			console.log(closestEdgeC2.charAt(1));
-		            			
-		            		//	dijsktraAttempt(closestEdgeC1, closestEdgeC2, response);
-		            			clickCount = 0;
+		            			//dijsktraDraw(closestEdgeC1, closestEdgeC2, click1X, click1Y, click2X, click2Y, response);
 		            		}
-		            */
+		            		*/
+		            		clickCount = 0;
+		            
 		            },
 		            error: function(XMLHttpRequest, textStatus, errorThrown) { 
 		                console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
 		            }  
 		        });
 		        
-		        ///////ATTEMPT AT MAKING IT DONE IN PHP
-		        /*
-		        $.ajax({    //create an ajax request to load_page.php
+}
+
+function dijsktraDraw(start, end, clickedObject) {
+	
+	$.ajax({    //create an ajax request to load_page.php
 		            type: "GET",
-		            url: "testPointLine.php",
-		            data: { building_clicked : selectedBuilding, floor_clicked : floorClicked, point : JSON.stringify(point)},
+		            url: "jefftestDijkstra.php",
+		            data: {
+		            	startNode : start ,
+		            	endNode :   end
+		            },
 		            success: function(response){ 
 		            	console.log(response);
 		            },
@@ -375,41 +452,12 @@ function pathNearestToClick(clickedSection) {
 		                console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
 		            }  
 		        });
-		        */
 		        
-}
-function createArray(length) {
-	var arr = new Array(length || 0),
-    i = length;
-
-    if (arguments.length > 1) {
-      	var args = Array.prototype.slice.call(arguments, 1);
-        while(i--) arr[length-1 - i] = createArray.apply(this, args);
-    }
-
-    return arr;
-	}
-
-
-function dijsktraAttempt(start, end, data) {
-	var map = { 
-		A:{B: 82},
-		B:{C: 145, F: 121},
-		C:{D: 83},
-		D:{C: 83},
-		G:{F:136},
-		F:{H:47, G: 136, B: 121},
-		H:{I:213, F:47},
-		I:{H: 213}
-	};
-	var graph = new Graph(map);
-	
-	var shortestPath = graph.findShortestPath(start.charAt(0), end.charAt(1));
+/*		        
 	
 	console.log(shortestPath);
 	
 	// Time to draw the path:
-	
 	// First delete any pre-existing routes:
 	$('#displayBlues').find('line').remove();
 	for (var i = 0; i <shortestPath.length-1; i++) {
@@ -438,6 +486,7 @@ function dijsktraAttempt(start, end, data) {
 			/// Then show the new route we just made:
 			$("#displayBlues").append(newPath);
 	}
+*/
 	
 }
 
