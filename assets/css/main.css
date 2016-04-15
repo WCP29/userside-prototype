@@ -35,21 +35,22 @@ section {
 	font-size: 30px;
 }
 
+#destinations-button {
+	border-radius: 2px;
+	height: 30px;
+	width: 140px;
+	background-color: #E7746F;
+	color: white;
+	border: 1px solid #E7746F;
+	font-size: 18px;
+	cursor: pointer;
+}
+
 #find-bathroom, #find-stair, #find-aed {
 	font-size: 20px;
 }
 map, area {
 	z-index: 9999;
-}
-
-#modal {
-	height: 60%;
-	width: 60%;
-	background-color: #363A34;
-	z-index: 9999;
-}
-#modal > p {
-	color: white;
 }
 
 /*Right Click Menu*/
@@ -94,7 +95,7 @@ map, area {
 }
 
 /*ReModal Implementation*/
-#Modal-Head1, #modal-floorshead, #modal-blueprinthead {
+#Modal-Head1, #modal-floorshead, #modal-blueprinthead, #modal-destinationhead, #modal-featurehead {
 	color: #E7746F;
 	font-weight: 200;
 	font-size: 25px;

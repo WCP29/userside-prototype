@@ -7,18 +7,16 @@ var secondPoint = {};
 var floorClicked = '';
 var clickCount = 0;
 var closestEdgeC1 = '';
-var closestEdgeC2 = '';
 var startNode = '';
 var click1X = '';
-var click2X = '';
 var click1Y = '';
-var click2Y = '';
 var shortestPointDist = '';
 var closestNode = '';
+var destinationMondal = '';
+var featureSelectedmodal = '';
 
 $(document).ready(function() {
-	console.log('jQuery running properly');
-
+	
 	$('#where-am-i, #find-a-room, #navigation, #footer, #begin-menu, #campus-map, #modal').hide();
 	
 	
@@ -37,10 +35,10 @@ $(document).ready(function() {
 	whatFloorClick();
 	//pathNearestToClick();
 	coordinatesFloor();
-
-
-	//dijsktraAttempt('I','G');
-
+	destinationClick();
+	featureClick();
+	featureEndPointDesired();
+	
 
 });
 
@@ -82,36 +80,6 @@ function campusMapShow() {
 
 	});
 };
-/*function campusMapCoordinates() {
-	$('#span-image-holder').on('click', function(event) {
-		console.log('you clicked. \n');
-        window.current_x = Math.round(event.pageX - $('#span-image-holder').offset().left);
-        window.current_y = Math.round(event.pageY - $('#span-image-holder').offset().top);
-        window.current_coords = window.current_x + ', ' + window.current_y;
-        console.log("page: " + event.pageX + "," + event.pageY);
-        console.log(($('#span-image-holder').offset().left) + "," + ($('#span-image-holder').offset().top));
-        console.log(window.current_coords);
-        
-        loadModalForBuilding(window.current_x, window.current_y);
-        
-	});
-}
-function loadModalForBuilding(xCord, yCord) {
-	if (xCord >= 59 && xCord <= 329 && yCord >= 261 && yCord <= 476) {
-		//load the modal for floors in this building
-		alert('this bull works. \n');
-	}
-	else {
-		console.log('waiting for click. \n');
-	}
-/*	else if () {
-		
-	}
-	else if () {
-		
-	}
-	
-} */
 
 function interactArea() {
 	$('#campus-coordinates area').on('click', function(e){
@@ -285,6 +253,77 @@ function whatFloorClick() {
 	})
 }
 
+function destinationClick() {
+	$('#destinations-button').on('click', function(e) {
+		e.preventDefault();
+		blueprint.close();
+		destinationModal = $('[data-remodal-id=destinations-modal]').remodal();
+		destinationModal.open();
+	});
+}
+
+function capitalizeEachWord(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function featureClick() {
+	$('#req-bathroom, #req-elevator, #req-stairwell').on('click', function(e) {
+		e.preventDefault();
+		var clickedFeature = $(this).attr('id');
+		var splitFeatureID = clickedFeature.split('-');
+		clickedFeature = splitFeatureID[1];
+		destinationModal.close();
+		
+		$.ajax({
+		            type: "GET",
+		            url: "getClickedFeatures.php",
+		            dataType: "json",
+		            data: { feature_desired : clickedFeature},
+		            success: function(response){ 
+		            	console.log(response);
+		            	for (var i = 0; i < 5; i++) {
+		            		$('#feature-list-location').append(
+		            			'<li id=""><a href="#" class="featureDesire" id="' + response[i].featID + '_' + response[i].floor_id + '">' + capitalizeEachWord(clickedFeature) + ' - Floor_ID: ' + response[i].floor_id + '</a></li>'
+		            			);
+		            	};
+		            	
+		            	featureSelectedmodal = $('[data-remodal-id=featureSelected-modal]').remodal();
+		            	featureSelectedmodal.open();
+		            },
+		            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+		                console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
+		            }  
+			});
+	});
+}
+function featureEndPointDesired() {
+	$(document).on('click','.featureDesire', function(e) {
+		e.preventDefault();
+		var clickedFeature = $(this).attr('id');
+		var splitID = clickedFeature.split('_');
+		///console.log('SHOW THIS.');
+		// AJAX TO JOEY
+		$.ajax({
+		            type: "GET",
+		            url: "moretesting.php",
+		            //dataType: "json",
+		            data: { feature_desired : splitID[0], building_clicked : selectedBuilding, floor_clicked : floorClicked, user_clicked : point, featureFloorID : splitID[1]},
+		            success: function(response){ 
+		            	console.log('SENT TO PHP');
+		            	console.log(response);
+		            	featureSelectedmodal.close();
+		            	blueprint.open();
+		            	
+		            },
+		            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+		                console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
+		            }  
+			});
+		
+	})
+		
+}
+
 
 function sqrExp(x) { return x * x }
 function lineDist(a, b) { return sqrExp(a.x - b.x) + sqrExp(a.y - b.y) }
@@ -300,7 +339,7 @@ function distToSegmentSquared(point, a, b) {
   return lineDist(point, { x: a.x + result * (b.x - a.x),
                     y: a.y + result * (b.y - a.y) });
 }
-// Return minimum distance between line segment vw and point p
+// Return minimum distance between line segment ab and point
 function distToLineFinal(point, a, b) { 
 	return Math.sqrt(distToSegmentSquared(point, a, b));
 }
@@ -310,16 +349,18 @@ function coordinatesFloor() {
 		window.current_x = Math.round(event.pageX - $('#displayBlues').offset().left);
         window.current_y = Math.round(event.pageY - $('#displayBlues').offset().top);
         window.current_coords = window.current_x + ', ' + window.current_y;
-        clickCount++;
-        if (clickCount == 1) {
+        //clickCount++;
+        //if (clickCount == 1) {
         	point = {x: window.current_x, y:window.current_y};
-        	pathNearestToClick(point)
-        }
+        	pathNearestToClick(point);
+        //}
+        /*
         else if(clickCount == 2) {
         	secondPoint = {x: window.current_x, y:window.current_y};
         	//console.log('secondClick:' + secondPoint);
         	pathNearestToClick(secondPoint);
         }
+        */
 	});
 }
 
@@ -333,9 +374,9 @@ function pathNearestToClick(clickedSection) {
 		            console.log(response);
 		            	var shortestDistance = '';
 		            	var pathName = '';
+		            	shortestPointDist = '';
 		            	
 		            	  //Test each value to see if the point clicked is close to the line clicked:
-		            	  
 						    for (var i = 0; i < response.length; i++) {
 						    		var distance = distToLineFinal(clickedSection, {x:parseFloat(response[i].x1Cord), y:parseFloat(response[i].y1Cord)}, {x:parseFloat(response[i].x2Cord), y:parseFloat(response[i].y2Cord)});
 						    	//	console.log('Distance from path: ' + response[i].pointOne + ',' + response[i].pointTwo + ': \n ' + distance);
@@ -349,25 +390,8 @@ function pathNearestToClick(clickedSection) {
 							    			pathName = response[i].pointOne + ',' + response[i].pointTwo;
 							    		}
 						    }
-						    
-						    // GO FOR NEAREST NODE INSTEAD!
-						    /*
-						    for (var i = 0; i < response.length; i++) {
-						    	
-						    		var distance = 0;
-							    		if (shortestDistance == '') {
-							    			shortestDistance = distance;
-							    			pathName = response[i].pointOne + ',' + response[i].pointTwo;
-							    		}
-							    		else if (shortestDistance > distance) {
-							    			shortestDistance = distance;
-							    			startNode = response[i].pointOne;
-							    			pathName = response[i].pointOne + ',' + response[i].pointTwo;
-							    		}
-						    }
-						    */
 						
-						    if (clickCount == 1) {
+						   // if (clickCount == 1) {
 		            			//console.log('The edge closest to ' + clickCount +  'st click: '+ clickedSection.x + ',' + clickedSection.y + ' is: \n' + pathName + ': ' + shortestDistance + '\n');
 		            			click1X = clickedSection.x;
 		            			click1Y = clickedSection.y;
@@ -411,72 +435,89 @@ function pathNearestToClick(clickedSection) {
 		            			 			
 		            			 		}
 		            			 	}
-		            			 }
-		            			console.log('Shortest distance to node on path is: ' + shortestDistance + ': ' + closestNode );
+		            			 //}
+		            			//console.log('Shortest distance to node on path is: ' + shortestPointDist + ': ' + closestNode );
 		            			
 						    }
-						    clickCount = 0;
-						    dijsktraDraw(closestNode, , clickedObject);
+						   // clickCount = 0;
+						    //dijkstraDraw(closestNode, 203, clickedObject); // DONT FORGET TO PUT BACK ON OR RECONFIGURE!
 		            },
 		            error: function(XMLHttpRequest, textStatus, errorThrown) { 
 		                console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
 		            }  
-		        });
-		        
+		});
+		
+		
+		//AJAX to JOEY
+		/*
+			$.ajax({
+		            type: "GET",
+		            url: "moretesting.php",
+		            data: { building_clicked : selectedBuilding, floor_clicked : floorClicked, user_clicked : clickedSection },
+		            success: function(response){ 
+		            	console.log("Joey's PHP response is below: ");
+		            	
+		            	//var myWindow = window.open("", "JOEY PHP OUTPUT", "width=600, height=400");
+    					//myWindow.document.write(response);
+		            	console.log(response);
+		            	
+		            
+						
+				//var yolo = window.open("","ay","width=300,height=300,scrollbars=1,resizable=1");
+			//	yolo.document.open();
+				//yolo.document.write(response);
+				//yolo.document.close();
+				
+		            },
+		            error: function(XMLHttpRequest, textStatus, errorThrown) { 
+		                console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
+		            }  
+			});
+			*/
 }
 
-function dijsktraDraw(start, end, clickedObject) {
+function dijkstraDraw(start_node, end_option, clickedObject) {
 	
-	$.ajax({    //create an ajax request to load_page.php
+	$.ajax({
 		            type: "GET",
 		            url: "jefftestDijkstra.php",
-		            data: {
-		            	startNode : start ,
-		            	endNode :   end
-		            },
+		            dataType: "json",
+		            data: { startNode : start_node, endNode :   end_option },
 		            success: function(response){ 
-		            	console.log(response);
+		            	//console.log(response);
+		            	$('#displayBlues').find('line').remove();
+		            	for (var i = 0; i < response.length; i++) {
+		            		var newPath = document.createElementNS('http://www.w3.org/2000/svg','line');
+		            		if (i !== (response.length - 1) ) {
+							newPath.setAttribute('id', 'step_' + i);
+							newPath.setAttribute('x1', response[i].xCord);
+							newPath.setAttribute('y1', response[i].yCord);
+							newPath.setAttribute('x2', response[i+1].xCord);
+							newPath.setAttribute('y2', response[i+1].yCord);
+							newPath.setAttribute('stroke','#000000');
+							newPath.setAttribute('stroke-width', '12.5');
+							newPath.setAttribute('fill', 'none');
+							/// Then show the new route we just made:
+							$("#displayBlues").append(newPath);
+		            		}
+		            	 }
+		            	 // Connect the route generated with the right starting point, where it was clicked:
+		            	var routeFirstNode = $('#step_0');
+		            	var startingPath = document.createElementNS('http://www.w3.org/2000/svg','line');
+		            	startingPath.setAttribute('id', 'Step_' + -1);
+						startingPath.setAttribute('x1', clickedObject.x);
+						startingPath.setAttribute('y1', clickedObject.y);
+						startingPath.setAttribute('x2', routeFirstNode.attr('x1'));
+						startingPath.setAttribute('y2', routeFirstNode.attr('y1'));
+						startingPath.setAttribute('stroke','#000000');
+						startingPath.setAttribute('stroke-width', '12.5');
+						startingPath.setAttribute('fill', 'none');							/// Then show the new route we just made:
+						$("#displayBlues").append(startingPath);
 		            },
 		            error: function(XMLHttpRequest, textStatus, errorThrown) { 
 		                console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
 		            }  
-		        });
-		        
-/*		        
-	
-	console.log(shortestPath);
-	
-	// Time to draw the path:
-	// First delete any pre-existing routes:
-	$('#displayBlues').find('line').remove();
-	for (var i = 0; i <shortestPath.length-1; i++) {
-			//Every shortest path will refer to an edge, makeEdge. MakeEdge is from the DB.
-			var makeEdge = shortestPath[i] + shortestPath[i+1];
-			console.log('Combining: ' + i + ',' + i + '+1 : ' + makeEdge);
-			
-			// Go through the data array and find the right SVG element so we can draw its path:
-			 var edgeStoredIn = '';
-			 for (var j = 0; j < data.length; j++) {
-        		if (data[j].svg_id == makeEdge) {
-        			//console.log('datasvg id: ' + data[j].svg_id + '\n');
-            		edgeStoredIn = j;
-        		}
-		 	}
-			//Draw the edge that contributes to the overall route:
-			var newPath = document.createElementNS('http://www.w3.org/2000/svg','line');
-			newPath.setAttribute('id', data[edgeStoredIn].svg_id);
-			newPath.setAttribute('x1', data[edgeStoredIn].x1Cord);
-			newPath.setAttribute('y1', data[edgeStoredIn].y1Cord);
-			newPath.setAttribute('x2', data[edgeStoredIn].x2Cord);
-			newPath.setAttribute('y2', data[edgeStoredIn].y2Cord);
-			newPath.setAttribute('stroke','#000000');
-			newPath.setAttribute('stroke-width', '12.5');
-			newPath.setAttribute('fill', 'none');
-			/// Then show the new route we just made:
-			$("#displayBlues").append(newPath);
-	}
-*/
-	
+	});
 }
 
 function whatRoomClicked() {
