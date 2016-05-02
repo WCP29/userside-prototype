@@ -14,6 +14,19 @@ var shortestPointDist = '';
 var closestNode = '';
 var destinationMondal = '';
 var featureSelectedmodal = '';
+var nextPathModal = '';
+var PathFloor_ID ='';
+var pfloorIDs=[];
+var floorStuff = [];
+var floor1 =[];
+var floor2 =[];
+var floor3 =[];
+var floor4 =[];
+var floor5 =[];
+var floor6 =[];
+var floor7 =[];
+var floor8 =[];
+var floor9 =[];
 
 $(document).ready(function() {
 	
@@ -38,6 +51,35 @@ $(document).ready(function() {
 	destinationClick();
 	featureClick();
 	featureEndPointDesired();
+	
+	
+	floorPlans(1);
+	floor1.push(floorStuff);
+	floorPlans(2);
+	floor2.push(floorStuff);
+	floorPlans(3);
+	floor3.push(floorStuff);
+	floorPlans(4);
+	floor4.push(floorStuff);
+	floorPlans(5);
+	floor5.push(floorStuff);
+	floorPlans(6);
+	floor6.push(floorStuff);
+	floorPlans(7);
+	floor7.push(floorStuff);
+	floorPlans(8);
+	floor8.push(floorStuff);
+	floorPlans(9);
+	floor9.push(floorStuff);
+	
+	
+	// Remove this later:
+	extractFullPathArray();
+	nextPathButton(0);
+	nextPathButton(1);
+	nextPathButton(2);
+	nextPathButton(3);
+	nextPathButton(4);
 	
 
 });
@@ -89,9 +131,7 @@ function interactArea() {
 		$('#modal').fadeIn('medium');
 	})
 }
-function modalPress() {
-	
-}
+
 function customRightClickMenu() {
 	$("#svg-map").bind("contextmenu", function (event) {
     
@@ -193,7 +233,7 @@ function clickRoomsModal() {
 	})
 }
 function whatFloorClick() {
-	$('#floor-1, #floor-2').on('click', function(e) {
+	$('#floor-1, #floor-2, #floor-3').on('click', function(e) {
 		floorClicked = $(this).attr('id');
 		e.preventDefault();
 		
@@ -273,6 +313,7 @@ function featureClick() {
 		var splitFeatureID = clickedFeature.split('-');
 		clickedFeature = splitFeatureID[1];
 		destinationModal.close();
+		$('#feature-list-location').empty();
 		
 		$.ajax({
 		            type: "GET",
@@ -281,11 +322,13 @@ function featureClick() {
 		            data: { feature_desired : clickedFeature},
 		            success: function(response){ 
 		            	console.log(response);
-		            	for (var i = 0; i < 5; i++) {
+		            	
+		            	for (var i = 0; i < response.length; i++) {
 		            		$('#feature-list-location').append(
-		            			'<li id=""><a href="#" class="featureDesire" id="' + response[i].featID + '_' + response[i].floor_id + '">' + capitalizeEachWord(clickedFeature) + ' - Floor_ID: ' + response[i].floor_id + '</a></li>'
+		            			'<li id=""><a href="#" class="featureDesire" id="' + response[i].featID + '_' + response[i].floor_id + '">' + capitalizeEachWord(clickedFeature) + ' - ' + response[i].buildingName + ' Floor ' + response[i].floorLevel + '</a></li>'
 		            			);
 		            	};
+		            		
 		            	
 		            	featureSelectedmodal = $('[data-remodal-id=featureSelected-modal]').remodal();
 		            	featureSelectedmodal.open();
@@ -301,6 +344,7 @@ function featureEndPointDesired() {
 		e.preventDefault();
 		var clickedFeature = $(this).attr('id');
 		var splitID = clickedFeature.split('_');
+		featureSelectedmodal.close();
 		///console.log('SHOW THIS.');
 		// AJAX TO JOEY
 		$.ajax({
@@ -309,10 +353,11 @@ function featureEndPointDesired() {
 		            //dataType: "json",
 		            data: { feature_desired : splitID[0], building_clicked : selectedBuilding, floor_clicked : floorClicked, user_clicked : point, featureFloorID : splitID[1]},
 		            success: function(response){ 
-		            	console.log('SENT TO PHP');
+		            //	console.log('SENT TO PHP');
+		            	console.log('Length is: ' + response.length);
 		            	console.log(response);
-		            	featureSelectedmodal.close();
-		            	blueprint.open();
+		            	// Open modal titled: Directions to `Feature` on `Building` Floor `#`
+		            	//extractFullPathArray();
 		            	
 		            },
 		            error: function(XMLHttpRequest, textStatus, errorThrown) { 
@@ -322,6 +367,181 @@ function featureEndPointDesired() {
 		
 	})
 		
+}
+function extractFullPathArray() {
+	$.ajax({
+        type: "GET",
+        url: "GrabTotalPathXY.php",
+        dataType: "json",
+        //data: { flag : '1' },
+        success: function(response){
+        	console.log("Length of Joey's Array: " + response.length);
+        	console.log("joey array" + response);
+        	
+        	// Make the modal templates:
+        	for (var iffy = 0; iffy <response.length; iffy++) {
+        		$('footer').before('<div data-remodal-id="Path' + iffy + '"><button data-remodal-action="close" class="remodal-close"></button><h1 id="path' + iffy + '-head">You are on the X floor of Building Y</h1><div id="pathMapHolder"><svg id="Path' + iffy + '-svg"width="580" height="400" xmlns="http://www.w3.org/2000/svg"> </svg><button id="Path' + iffy + '-next">Next</button></div></div>');
+        	}
+        	
+        	
+        	for (var iffy = 0; iffy < response.length; iffy++) {
+        		for (var j = 0; j < response[iffy].length; j++) {
+        			var miniPathPoint = response[iffy][j] ;
+        			//console.log(miniPathPoint);
+        			
+        			// IF THE PATH DISPLAY IS BUILDING TO BUILDING, YOU DONT HAVE FLOOR_ID
+        			if (miniPathPoint.floor_id == null) {
+        				//$('#Path' + iffy + '-svg').empty();
+        				var newRect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+					    newRect.setAttribute('height','45');
+					    newRect.setAttribute('width','45');
+					    newRect.setAttribute('y', '54.99997' );
+					    newRect.setAttribute('x','59');
+					    newRect.setAttribute('fill', '#000000');
+					    newRect.setAttribute('stroke','#000000');
+					    newRect.setAttribute('stroke-width','5');
+					    newRect.setAttribute('stroke-linecap','null');
+					    newRect.setAttribute('stroke-linejoin','null');
+					    newRect.setAttribute('transform','rotate(121.16, 105.5, 88.5)');
+					    //console.log(i);
+        				$('#Path' + iffy + '-svg').append(newRect);
+        				
+        				var secRec = document.createElementNS('http://www.w3.org/2000/svg','rect');
+						secRec.setAttribute('height','45');
+					    secRec.setAttribute('width','45');
+					    secRec.setAttribute('y', '225' );
+					    secRec.setAttribute('x','100');
+					    secRec.setAttribute('fill', '#000000');
+					    secRec.setAttribute('stroke','#000000');
+					    secRec.setAttribute('stroke-width','5');
+					    secRec.setAttribute('stroke-linecap','null');
+					    secRec.setAttribute('stroke-linejoin','null');
+					    //console.log(i);
+        				$('#Path' + iffy + '-svg').append(secRec);
+        				
+        				var thirdRec = document.createElementNS('http://www.w3.org/2000/svg','rect');
+					    thirdRec.setAttribute('height','50.060501');
+					    thirdRec.setAttribute('width','50.926947');
+					    thirdRec.setAttribute('y', '271.969722' );
+					    thirdRec.setAttribute('x','401.536476');
+					    thirdRec.setAttribute('fill', '#000000');
+					    thirdRec.setAttribute('stroke','#000000');
+					    thirdRec.setAttribute('stroke-width','5');
+					    thirdRec.setAttribute('transform','rotate(73.5001, 462, 146.5)');
+					   // console.log(iffy);
+        				$('#Path' + iffy + '-svg').append(thirdRec);
+        				//console.log('response[iffy] length: '+ response[iffy].length);
+        				//console.log('iffy: ' + i);
+        				var newPath = document.createElementNS('http://www.w3.org/2000/svg','line');
+	            		if (j < (response[iffy].length - 1) ) {
+	            			//console.log(j);
+	            			//console.log(miniPathPoint.x + `, ` + miniPathPoint.y);
+	            			//console.log(response[i][j + 1].x + ', ' + response[i][j + 1].y);
+							newPath.setAttribute('x1', miniPathPoint.x);
+							newPath.setAttribute('y1', miniPathPoint.y);
+							newPath.setAttribute('x2', response[iffy][j + 1].x);
+							newPath.setAttribute('y2', response[iffy][j + 1].y);
+							newPath.setAttribute('stroke','#0000ff');
+							newPath.setAttribute('stroke-width', '12.5');
+							newPath.setAttribute('fill', 'none');
+							//console.log(newPath);
+							/// Then show the new route we just made:
+							$('#Path' + iffy + '-svg').append(newPath);
+	            		}
+        			}
+        			else {
+        				console.log(miniPathPoint.floor_id);
+    				 		switch(miniPathPoint.floor_id) {
+    				 			case '1':
+    				 				drawPathFloor(floor1, iffy);
+    				 				break;
+    				 			case '2':
+    				 				drawPathFloor(floor2, iffy);
+    				 				break;
+    				 			case '3':
+    				 				drawPathFloor(floor3, iffy);
+    				 				break;
+    				 			case '4':
+    				 				drawPathFloor(floor4, iffy);
+    				 				break;
+    				 			case '5':
+    				 				drawPathFloor(floor5, iffy);
+    				 				break;
+    				 			case '6':
+    				 				drawPathFloor(floor6, iffy);
+    				 				break;
+    				 			case '7':
+    				 				drawPathFloor(floor7, iffy);
+    				 				break;
+    				 			case '8':
+    				 				drawPathFloor(floor8, iffy);
+    				 				break;
+    				 			case '9':
+    				 				drawPathFloor(floor9, iffy);
+    				 				break;
+    				 		}
+    				 		
+					      //// Draw the routes
+					      
+					      var newPath = document.createElementNS('http://www.w3.org/2000/svg','line');
+	            		  if (j < (response[iffy].length - 1) ) {
+							newPath.setAttribute('x1', miniPathPoint.x);
+							newPath.setAttribute('y1', miniPathPoint.y);
+							newPath.setAttribute('x2', response[iffy][j + 1].x);
+							newPath.setAttribute('y2', response[iffy][j + 1].y);
+							newPath.setAttribute('stroke','#0000ff');
+							newPath.setAttribute('stroke-width', '12.5');
+							newPath.setAttribute('fill', 'none');
+							console.log(newPath);
+							$('#Path' + iffy + '-svg').append(newPath);
+	            		  }
+	            		  
+    				}
+        		}
+        	}
+        	
+        	nextPathModal = $('[data-remodal-id=Path0').remodal();
+        	nextPathModal.open();
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) { 
+            console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
+        }  
+	});
+}
+
+
+
+function drawPathFloor(information, iffy) {
+ 	for(var itr = 0; itr < information[0][0].length; itr++) {
+ 		//console.log(information[0][0][itr]);	
+ 		
+        var newRect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+	    newRect.setAttribute('id', information[0][0][itr].svg_id);
+	    newRect.setAttribute('height',42);
+	    newRect.setAttribute('width',55);
+	    newRect.setAttribute('y',information[0][0][itr].yCord );
+	    newRect.setAttribute('x',information[0][0][itr].xCord);
+	    newRect.setAttribute('fill', '#fff');
+	    newRect.setAttribute('stroke','#000');
+	    console.log(iffy);
+	    $('#Path' + iffy + '-svg').append(newRect);
+	   
+ 	}
+		                
+}
+
+function nextPathButton(num) {
+	$(document).on('click', '#Path' + num + '-next', function(e) {
+		//alert('yo');
+		e.preventDefault();
+		var currentNextPressed = $(this).attr('id').charAt(4);
+		nextPathModal.close();
+		var openNext = parseInt(currentNextPressed) + 1;
+		alert(currentNextPressed + '   ' + openNext );
+		nextPathModal = $('[data-remodal-id=Path' + openNext + ']').remodal();
+		nextPathModal.open();
+		
+	})
 }
 
 
@@ -349,18 +569,9 @@ function coordinatesFloor() {
 		window.current_x = Math.round(event.pageX - $('#displayBlues').offset().left);
         window.current_y = Math.round(event.pageY - $('#displayBlues').offset().top);
         window.current_coords = window.current_x + ', ' + window.current_y;
-        //clickCount++;
-        //if (clickCount == 1) {
+
         	point = {x: window.current_x, y:window.current_y};
         	pathNearestToClick(point);
-        //}
-        /*
-        else if(clickCount == 2) {
-        	secondPoint = {x: window.current_x, y:window.current_y};
-        	//console.log('secondClick:' + secondPoint);
-        	pathNearestToClick(secondPoint);
-        }
-        */
 	});
 }
 
@@ -435,45 +646,15 @@ function pathNearestToClick(clickedSection) {
 		            			 			
 		            			 		}
 		            			 	}
-		            			 //}
-		            			//console.log('Shortest distance to node on path is: ' + shortestPointDist + ': ' + closestNode );
-		            			
+
 						    }
-						   // clickCount = 0;
 						    //dijkstraDraw(closestNode, 203, clickedObject); // DONT FORGET TO PUT BACK ON OR RECONFIGURE!
 		            },
 		            error: function(XMLHttpRequest, textStatus, errorThrown) { 
 		                console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
 		            }  
 		});
-		
-		
-		//AJAX to JOEY
-		/*
-			$.ajax({
-		            type: "GET",
-		            url: "moretesting.php",
-		            data: { building_clicked : selectedBuilding, floor_clicked : floorClicked, user_clicked : clickedSection },
-		            success: function(response){ 
-		            	console.log("Joey's PHP response is below: ");
-		            	
-		            	//var myWindow = window.open("", "JOEY PHP OUTPUT", "width=600, height=400");
-    					//myWindow.document.write(response);
-		            	console.log(response);
-		            	
-		            
-						
-				//var yolo = window.open("","ay","width=300,height=300,scrollbars=1,resizable=1");
-			//	yolo.document.open();
-				//yolo.document.write(response);
-				//yolo.document.close();
-				
-		            },
-		            error: function(XMLHttpRequest, textStatus, errorThrown) { 
-		                console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
-		            }  
-			});
-			*/
+	
 }
 
 function dijkstraDraw(start_node, end_option, clickedObject) {
@@ -519,9 +700,18 @@ function dijkstraDraw(start_node, end_option, clickedObject) {
 		            }  
 	});
 }
-
-function whatRoomClicked() {
-	$('#').on('click', function() {
-		
-	})
+function floorPlans(floorID) {
+	$.ajax({
+        type: "GET",
+        async: "true",
+        url: "floorPath.php",
+        dataType: "json",
+        data: { floor_id : floorID },
+        success: function(info){
+        	floorStuff.push(info); 
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) { 
+            console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
+        }  
+	});
 }

@@ -35,7 +35,7 @@ section {
 	font-size: 30px;
 }
 
-#destinations-button {
+#destinations-button, #Path0-next, #Path1-next, #Path2-next, #Path3-next, #Path4-next {
 	border-radius: 2px;
 	height: 30px;
 	width: 140px;
